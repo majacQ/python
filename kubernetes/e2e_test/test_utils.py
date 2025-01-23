@@ -13,8 +13,10 @@
 # under the License.
 
 import unittest
+from os import path
 
 import yaml
+
 from kubernetes import utils, client
 from kubernetes.client.rest import ApiException
 from kubernetes.e2e_test import base
@@ -29,7 +31,9 @@ class TestUtils(unittest.TestCase):
         cls.test_namespace = "e2e-test-utils"
         k8s_client = client.api_client.ApiClient(configuration=cls.config)
         core_v1 = client.CoreV1Api(api_client=k8s_client)
-        body = client.V1Namespace(metadata=client.V1ObjectMeta(name=cls.test_namespace))
+        body = client.V1Namespace(
+            metadata=client.V1ObjectMeta(
+                name=cls.test_namespace))
         core_v1.create_namespace(body=body)
 
     @classmethod
@@ -37,6 +41,7 @@ class TestUtils(unittest.TestCase):
         k8s_client = client.api_client.ApiClient(configuration=cls.config)
         core_v1 = client.CoreV1Api(api_client=k8s_client)
         core_v1.delete_namespace(name=cls.test_namespace)
+
     # Tests for creating individual API objects
 
     def test_create_apps_deployment_from_yaml(self):
@@ -50,6 +55,87 @@ class TestUtils(unittest.TestCase):
         dep = app_api.read_namespaced_deployment(name="nginx-app",
                                                  namespace="default")
         self.assertIsNotNone(dep)
+        self.assertEqual("nginx-app", dep.metadata.name)
+        self.assertEqual("nginx:1.15.4", dep.spec.template.spec.containers[0].image)
+        self.assertEqual(80, dep.spec.template.spec.containers[0].ports[0].container_port)
+        self.assertEqual("nginx", dep.spec.template.spec.containers[0].name)
+        self.assertEqual("nginx", dep.spec.template.metadata.labels["app"])
+        self.assertEqual(3, dep.spec.replicas)
+
+        while True:
+            try:
+                app_api.delete_namespaced_deployment(
+                    name="nginx-app", namespace="default",
+                    body={})
+                break
+            except ApiException:
+                continue
+
+    def test_create_apps_deployment_from_yaml_with_apply_is_idempotent(self):
+        """
+        Should be able to create an apps/v1 deployment.
+        """
+        k8s_client = client.api_client.ApiClient(configuration=self.config)
+        try:
+            utils.create_from_yaml(
+                k8s_client, self.path_prefix + "apps-deployment.yaml")
+            app_api = client.AppsV1Api(k8s_client)
+            dep = app_api.read_namespaced_deployment(name="nginx-app",
+                                                    namespace="default")
+            self.assertIsNotNone(dep)
+            self.assertEqual("nginx-app", dep.metadata.name)
+            self.assertEqual("nginx:1.15.4", dep.spec.template.spec.containers[0].image)
+            self.assertEqual(80, dep.spec.template.spec.containers[0].ports[0].container_port)
+            self.assertEqual("nginx", dep.spec.template.spec.containers[0].name)
+            self.assertEqual("nginx", dep.spec.template.metadata.labels["app"])
+            self.assertEqual(3, dep.spec.replicas)
+
+            utils.create_from_yaml(
+                k8s_client, self.path_prefix + "apps-deployment.yaml", apply=True)
+            dep = app_api.read_namespaced_deployment(name="nginx-app",
+                                                    namespace="default")
+            self.assertIsNotNone(dep)
+            self.assertEqual("nginx-app", dep.metadata.name)
+            self.assertEqual("nginx:1.15.4", dep.spec.template.spec.containers[0].image)
+            self.assertEqual(80, dep.spec.template.spec.containers[0].ports[0].container_port)
+            self.assertEqual("nginx", dep.spec.template.spec.containers[0].name)
+            self.assertEqual("nginx", dep.spec.template.metadata.labels["app"])
+            self.assertEqual(3, dep.spec.replicas)
+        except Exception as e:
+            self.fail(e)
+        finally:
+            while True:
+                try:
+                    app_api.delete_namespaced_deployment(
+                        name="nginx-app", namespace="default",
+                        body={})
+                    break
+                except ApiException:
+                    continue
+
+    def test_create_apps_deployment_from_yaml_object(self):
+        """
+        Should be able to pass YAML objects directly to helper function.
+        """
+        k8s_client = client.api_client.ApiClient(configuration=self.config)
+        _path = self.path_prefix + "apps-deployment.yaml"
+        with open(path.abspath(_path)) as f:
+            yaml_objects = yaml.safe_load_all(f)
+            utils.create_from_yaml(
+                k8s_client,
+                yaml_objects=yaml_objects,
+            )
+        app_api = client.AppsV1Api(k8s_client)
+        dep = app_api.read_namespaced_deployment(name="nginx-app",
+                                                 namespace="default")
+        self.assertIsNotNone(dep)
+        self.assertEqual("nginx-app", dep.metadata.name)
+        self.assertEqual("nginx:1.15.4", dep.spec.template.spec.containers[0].image)
+        self.assertEqual(80, dep.spec.template.spec.containers[0].ports[0].container_port)
+        self.assertEqual("nginx", dep.spec.template.spec.containers[0].name)
+        self.assertEqual("nginx", dep.spec.template.metadata.labels["app"])
+        self.assertEqual(3, dep.spec.replicas)
+
         while True:
             try:
                 app_api.delete_namespaced_deployment(
@@ -72,6 +158,13 @@ class TestUtils(unittest.TestCase):
         dep = app_api.read_namespaced_deployment(name="nginx-app-3",
                                                  namespace="default")
         self.assertIsNotNone(dep)
+        self.assertEqual("nginx-app-3", dep.metadata.name)
+        self.assertEqual("nginx:1.15.4", dep.spec.template.spec.containers[0].image)
+        self.assertEqual(80, dep.spec.template.spec.containers[0].ports[0].container_port)
+        self.assertEqual("nginx", dep.spec.template.spec.containers[0].name)
+        self.assertEqual("nginx", dep.spec.template.metadata.labels["app"])
+        self.assertEqual(3, dep.spec.replicas)
+
         app_api.delete_namespaced_deployment(
             name="nginx-app-3", namespace="default",
             body={})
@@ -87,6 +180,10 @@ class TestUtils(unittest.TestCase):
         pod = core_api.read_namespaced_pod(name="myapp-pod",
                                            namespace="default")
         self.assertIsNotNone(pod)
+        self.assertEqual("myapp-pod", pod.metadata.name)
+        self.assertEqual("busybox", pod.spec.containers[0].image)
+        self.assertEqual("myapp-container", pod.spec.containers[0].name)
+
         core_api.delete_namespaced_pod(
             name="myapp-pod", namespace="default",
             body={})
@@ -102,6 +199,9 @@ class TestUtils(unittest.TestCase):
         svc = core_api.read_namespaced_service(name="my-service",
                                                namespace="default")
         self.assertIsNotNone(svc)
+        self.assertEqual("my-service", svc.metadata.name)
+        self.assertEqual("MyApp", svc.spec.selector["app"])
+
         core_api.delete_namespaced_service(
             name="my-service", namespace="default",
             body={})
@@ -115,12 +215,15 @@ class TestUtils(unittest.TestCase):
             k8s_client, self.path_prefix + "core-namespace.yaml")
         core_api = client.CoreV1Api(k8s_client)
         nmsp = core_api.read_namespace(name="development")
+
         self.assertIsNotNone(nmsp)
+        self.assertEqual("development", nmsp.metadata.name)
+
         core_api.delete_namespace(name="development", body={})
 
     def test_create_rbac_role_from_yaml(self):
         """
-        Should be able to create an rbac role.
+        Should be able to create a rbac role.
         """
         k8s_client = client.api_client.ApiClient(configuration=self.config)
         utils.create_from_yaml(
@@ -129,12 +232,15 @@ class TestUtils(unittest.TestCase):
         rbac_role = rbac_api.read_namespaced_role(
             name="pod-reader", namespace="default")
         self.assertIsNotNone(rbac_role)
+        self.assertEqual("pod-reader", rbac_role.metadata.name)
+        self.assertEqual("pods", rbac_role.rules[0].resources[0])
+
         rbac_api.delete_namespaced_role(
             name="pod-reader", namespace="default", body={})
 
     def test_create_rbac_role_from_yaml_with_verbose_enabled(self):
         """
-        Should be able to create an rbac role with verbose enabled.
+        Should be able to create a rbac role with verbose enabled.
         """
         k8s_client = client.api_client.ApiClient(configuration=self.config)
         utils.create_from_yaml(
@@ -143,6 +249,9 @@ class TestUtils(unittest.TestCase):
         rbac_role = rbac_api.read_namespaced_role(
             name="pod-reader", namespace="default")
         self.assertIsNotNone(rbac_role)
+        self.assertEqual("pod-reader", rbac_role.metadata.name)
+        self.assertEqual("pods", rbac_role.rules[0].resources[0])
+
         rbac_api.delete_namespaced_role(
             name="pod-reader", namespace="default", body={})
 
@@ -160,6 +269,8 @@ class TestUtils(unittest.TestCase):
         ext_api = client.AppsV1Api(k8s_client)
         nmsp = core_api.read_namespace(name="dep")
         self.assertIsNotNone(nmsp)
+        self.assertEqual("dep", nmsp.metadata.name)
+
         dep = ext_api.read_namespaced_deployment(name="nginx-deployment",
                                                  namespace="dep")
         self.assertIsNotNone(dep)
@@ -177,10 +288,14 @@ class TestUtils(unittest.TestCase):
         k8s_client = client.api_client.ApiClient(configuration=self.config)
         utils.create_from_yaml(
             k8s_client, self.path_prefix + "api-service.yaml")
-        reg_api = client.ApiregistrationV1beta1Api(k8s_client)
+        reg_api = client.ApiregistrationV1Api(k8s_client)
         svc = reg_api.read_api_service(
             name="v1alpha1.wardle.k8s.io")
         self.assertIsNotNone(svc)
+        self.assertEqual("v1alpha1.wardle.k8s.io", svc.metadata.name)
+        self.assertEqual("wardle.k8s.io", svc.spec.group)
+        self.assertEqual("v1alpha1", svc.spec.version)
+
         with self.assertRaises(utils.FailToCreateError) as cm:
             utils.create_from_yaml(
                 k8s_client, "kubernetes/e2e_test/test_yaml/api-service.yaml")
@@ -213,9 +328,16 @@ class TestUtils(unittest.TestCase):
         svc = core_api.read_namespaced_service(name="list-service-test",
                                                namespace="default")
         self.assertIsNotNone(svc)
+        self.assertEqual("list-service-test", svc.metadata.name)
+        self.assertEqual("list-deployment-test", svc.spec.selector["app"])
+
         dep = ext_api.read_namespaced_deployment(name="list-deployment-test",
                                                  namespace="default")
         self.assertIsNotNone(dep)
+        self.assertEqual("list-deployment-test", dep.metadata.name)
+        self.assertEqual("nginx:1.15.4", dep.spec.template.spec.containers[0].image)
+        self.assertEqual(1, dep.spec.replicas)
+
         core_api.delete_namespaced_service(name="list-service-test",
                                            namespace="default", body={})
         ext_api.delete_namespaced_deployment(name="list-deployment-test",
@@ -232,8 +354,14 @@ class TestUtils(unittest.TestCase):
         core_api = client.CoreV1Api(k8s_client)
         nmsp_1 = core_api.read_namespace(name="mock-1")
         self.assertIsNotNone(nmsp_1)
+        self.assertEqual("mock-1", nmsp_1.metadata.name)
+        self.assertEqual("mock-1", nmsp_1.metadata.labels["name"])
+
         nmsp_2 = core_api.read_namespace(name="mock-2")
         self.assertIsNotNone(nmsp_2)
+        self.assertEqual("mock-2", nmsp_2.metadata.name)
+        self.assertEqual("mock-2", nmsp_2.metadata.labels["name"])
+
         core_api.delete_namespace(name="mock-1", body={})
         core_api.delete_namespace(name="mock-2", body={})
 
@@ -250,12 +378,51 @@ class TestUtils(unittest.TestCase):
         svc_3 = core_api.read_namespaced_service(name="mock-3",
                                                  namespace="default")
         self.assertIsNotNone(svc_3)
+        self.assertEqual("mock-3", svc_3.metadata.name)
+        self.assertEqual("mock-3", svc_3.metadata.labels["app"])
+
         svc_4 = core_api.read_namespaced_service(name="mock-4",
                                                  namespace="default")
         self.assertIsNotNone(svc_4)
+        self.assertEqual("mock-4", svc_4.metadata.name)
+        self.assertEqual("mock-4", svc_4.metadata.labels["app"])
+
         core_api.delete_namespaced_service(name="mock-3",
                                            namespace="default", body={})
         core_api.delete_namespaced_service(name="mock-4",
+                                           namespace="default", body={})
+
+    # Tests for creating multi-resource from directory
+
+    def test_create_multi_resource_from_directory(self):
+        """
+        Should be able to create a service and a replication controller
+        from a directory
+        """
+        k8s_client = client.api_client.ApiClient(configuration=self.config)
+        utils.create_from_directory(
+            k8s_client, self.path_prefix + "multi-resource/")
+        core_api = client.CoreV1Api(k8s_client)
+        svc = core_api.read_namespaced_service(name="mock",
+                                               namespace="default")
+        self.assertIsNotNone(svc)
+        self.assertEqual("mock", svc.metadata.name)
+        self.assertEqual("mock", svc.metadata.labels["app"])
+        self.assertEqual("mock", svc.spec.selector["app"])
+
+        ctr = core_api.read_namespaced_replication_controller(
+            name="mock", namespace="default")
+        self.assertIsNotNone(ctr)
+        self.assertEqual("mock", ctr.metadata.name)
+        self.assertEqual("mock", ctr.spec.template.metadata.labels["app"])
+        self.assertEqual("mock", ctr.spec.selector["app"])
+        self.assertEqual(1, ctr.spec.replicas)
+        self.assertEqual("k8s.gcr.io/pause:2.0", ctr.spec.template.spec.containers[0].image)
+        self.assertEqual("mock-container", ctr.spec.template.spec.containers[0].name)
+
+        core_api.delete_namespaced_replication_controller(
+            name="mock", namespace="default", propagation_policy="Background")
+        core_api.delete_namespaced_service(name="mock",
                                            namespace="default", body={})
 
     # Tests for multi-resource yaml objects
@@ -272,11 +439,22 @@ class TestUtils(unittest.TestCase):
         svc = core_api.read_namespaced_service(name="mock",
                                                namespace="default")
         self.assertIsNotNone(svc)
+        self.assertEqual("mock", svc.metadata.name)
+        self.assertEqual("mock", svc.metadata.labels["app"])
+        self.assertEqual("mock", svc.spec.selector["app"])
+
         ctr = core_api.read_namespaced_replication_controller(
             name="mock", namespace="default")
         self.assertIsNotNone(ctr)
+        self.assertEqual("mock", ctr.metadata.name)
+        self.assertEqual("mock", ctr.spec.template.metadata.labels["app"])
+        self.assertEqual("mock", ctr.spec.selector["app"])
+        self.assertEqual(1, ctr.spec.replicas)
+        self.assertEqual("k8s.gcr.io/pause:2.0", ctr.spec.template.spec.containers[0].image)
+        self.assertEqual("mock-container", ctr.spec.template.spec.containers[0].name)
+
         core_api.delete_namespaced_replication_controller(
-            name="mock", namespace="default", body={})
+            name="mock", namespace="default", propagation_policy="Background")
         core_api.delete_namespaced_service(name="mock",
                                            namespace="default", body={})
 
@@ -293,12 +471,26 @@ class TestUtils(unittest.TestCase):
         pod_0 = core_api.read_namespaced_pod(
             name="mock-pod-0", namespace="default")
         self.assertIsNotNone(pod_0)
+        self.assertEqual("mock-pod-0", pod_0.metadata.name)
+        self.assertEqual("mock-pod-0", pod_0.metadata.labels["app"])
+        self.assertEqual("mock-pod-0", pod_0.spec.containers[0].name)
+        self.assertEqual("busybox", pod_0.spec.containers[0].image)
+
         pod_1 = core_api.read_namespaced_pod(
             name="mock-pod-1", namespace="default")
         self.assertIsNotNone(pod_1)
+        self.assertEqual("mock-pod-1", pod_1.metadata.name)
+        self.assertEqual("mock-pod-1", pod_1.metadata.labels["app"])
+        self.assertEqual("mock-pod-1", pod_1.spec.containers[0].name)
+        self.assertEqual("busybox", pod_1.spec.containers[0].image)
+
         dep = app_api.read_namespaced_deployment(
             name="mock", namespace="default")
         self.assertIsNotNone(dep)
+        self.assertEqual("mock", dep.metadata.name)
+        self.assertEqual("mock", dep.spec.template.metadata.labels["app"])
+        self.assertEqual(3, dep.spec.replicas)
+
         core_api.delete_namespaced_pod(
             name="mock-pod-0", namespace="default", body={})
         core_api.delete_namespaced_pod(
@@ -320,6 +512,11 @@ class TestUtils(unittest.TestCase):
         svc = core_api.read_namespaced_service(name="mock-2",
                                                namespace="default")
         self.assertIsNotNone(svc)
+        self.assertEqual("mock-2", svc.metadata.name)
+        self.assertEqual("mock-2", svc.metadata.labels["app"])
+        self.assertEqual("mock-2", svc.spec.selector["app"])
+        self.assertEqual(99, svc.spec.ports[0].port)
+
         with self.assertRaises(utils.FailToCreateError) as cm:
             utils.create_from_yaml(
                 k8s_client, self.path_prefix + "yaml-conflict-multi.yaml")
@@ -334,7 +531,7 @@ class TestUtils(unittest.TestCase):
             name="mock-2", namespace="default")
         self.assertIsNotNone(ctr)
         core_api.delete_namespaced_replication_controller(
-            name="mock-2", namespace="default", body={})
+            name="mock-2", namespace="default", propagation_policy="Background")
         core_api.delete_namespaced_service(name="mock-2",
                                            namespace="default", body={})
 
@@ -368,7 +565,7 @@ class TestUtils(unittest.TestCase):
     def test_create_namespaced_apps_deployment_from_yaml(self):
         """
         Should be able to create an apps/v1beta1 deployment
-		in a test namespace.
+                in a test namespace.
         """
         k8s_client = client.api_client.ApiClient(configuration=self.config)
         utils.create_from_yaml(

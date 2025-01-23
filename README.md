@@ -87,9 +87,24 @@ supported versions of Kubernetes clusters.
 - [client 11.y.z](https://pypi.org/project/kubernetes/11.0.0/): Kubernetes 1.14 or below (+-), Kubernetes 1.15 (✓), Kubernetes 1.16 or above (+-)
 - [client 12.y.z](https://pypi.org/project/kubernetes/12.0.1/): Kubernetes 1.15 or below (+-), Kubernetes 1.16 (✓), Kubernetes 1.17 or above (+-)
 - [client 17.y.z](https://pypi.org/project/kubernetes/17.17.0/): Kubernetes 1.16 or below (+-), Kubernetes 1.17 (✓), Kubernetes 1.18 or above (+-)
-- [client 18.y.z](https://pypi.org/project/kubernetes/18.20.0b1/): Kubernetes 1.17 or below (+-), Kubernetes 1.18 (✓), Kubernetes 1.19 or above (+-)
+- [client 18.y.z](https://pypi.org/project/kubernetes/18.20.0/): Kubernetes 1.17 or below (+-), Kubernetes 1.18 (✓), Kubernetes 1.19 or above (+-)
+- [client 19.y.z](https://pypi.org/project/kubernetes/19.15.0/): Kubernetes 1.18 or below (+-), Kubernetes 1.19 (✓), Kubernetes 1.20 or above (+-)
+- [client 20.y.z](https://pypi.org/project/kubernetes/20.13.0/): Kubernetes 1.19 or below (+-), Kubernetes 1.20 (✓), Kubernetes 1.21 or above (+-)
+- [client 21.y.z](https://pypi.org/project/kubernetes/21.7.0/): Kubernetes 1.20 or below (+-), Kubernetes 1.21 (✓), Kubernetes 1.22 or above (+-)
+- [client 22.y.z](https://pypi.org/project/kubernetes/22.6.0/): Kubernetes 1.21 or below (+-), Kubernetes 1.22 (✓), Kubernetes 1.23 or above (+-)
+- [client 23.y.z](https://pypi.org/project/kubernetes/23.6.0/): Kubernetes 1.22 or below (+-), Kubernetes 1.23 (✓), Kubernetes 1.24 or above (+-)
+- [client 24.y.z](https://pypi.org/project/kubernetes/24.2.0/): Kubernetes 1.23 or below (+-), Kubernetes 1.24 (✓), Kubernetes 1.25 or above (+-)
+- [client 25.y.z](https://pypi.org/project/kubernetes/25.3.0/): Kubernetes 1.24 or below (+-), Kubernetes 1.25 (✓), Kubernetes 1.26 or above (+-)
+- [client 26.y.z](https://pypi.org/project/kubernetes/26.1.0/): Kubernetes 1.25 or below (+-), Kubernetes 1.26 (✓), Kubernetes 1.27 or above (+-)
+- [client 27.y.z](https://pypi.org/project/kubernetes/27.2.0/): Kubernetes 1.26 or below (+-), Kubernetes 1.27 (✓), Kubernetes 1.28 or above (+-)
+- [client 28.y.z](https://pypi.org/project/kubernetes/28.1.0/): Kubernetes 1.27 or below (+-), Kubernetes 1.28 (✓), Kubernetes 1.29 or above (+-)
+- [client 29.y.z](https://pypi.org/project/kubernetes/29.0.0/): Kubernetes 1.28 or below (+-), Kubernetes 1.29 (✓), Kubernetes 1.30 or above (+-)
+- [client 30.y.z](https://pypi.org/project/kubernetes/30.1.0/): Kubernetes 1.29 or below (+-), Kubernetes 1.30 (✓), Kubernetes 1.31 or above (+-)
+- [client 31.y.z](https://pypi.org/project/kubernetes/31.0.0/): Kubernetes 1.30 or below (+-), Kubernetes 1.31 (✓), Kubernetes 1.32 or above (+-)
+- [client 32.y.z](https://pypi.org/project/kubernetes/32.0.0/): Kubernetes 1.31 or below (+-), Kubernetes 1.32 (✓), Kubernetes 1.33 or above (+-)
 
-> See [here](#homogenizing-the-kubernetes-python-client-versions) for an explaination of why there is no v13-v16 release.
+
+> See [here](#homogenizing-the-kubernetes-python-client-versions) for an explanation of why there is no v13-v16 release.
 
 Key:
 
@@ -121,14 +136,43 @@ between client-python versions.
 | 10.0 Alpha/Beta | Kubernetes main repo, 1.14 branch    | ✗                             |
 | 10.0            | Kubernetes main repo, 1.14 branch    | ✗                             |
 | 11.0 Alpha/Beta | Kubernetes main repo, 1.15 branch    | ✗                             |
-| 11.0            | Kubernetes main repo, 1.15 branch    | ✓                             |
+| 11.0            | Kubernetes main repo, 1.15 branch    | ✗                             |
 | 12.0 Alpha/Beta | Kubernetes main repo, 1.16 branch    | ✗                             |
-| 12.0            | Kubernetes main repo, 1.16 branch    | ✓                             |
+| 12.0            | Kubernetes main repo, 1.16 branch    | ✗                             |
 | 17.0 Alpha/Beta | Kubernetes main repo, 1.17 branch    | ✗                             |
-| 17.0            | Kubernetes main repo, 1.17 branch    | ✓                             |
-| 18.0 Alpha/Beta | Kubernetes main repo, 1.18 branch    | ✓                             |
+| 17.0            | Kubernetes main repo, 1.17 branch    | ✗                             |
+| 18.0 Alpha/Beta | Kubernetes main repo, 1.18 branch    | ✗                             |
+| 18.0            | Kubernetes main repo, 1.18 branch    | ✗                             |
+| 19.0 Alpha/Beta | Kubernetes main repo, 1.19 branch    | ✗                             |
+| 19.0            | Kubernetes main repo, 1.19 branch    | ✗                             |
+| 20.0 Alpha/Beta | Kubernetes main repo, 1.20 branch    | ✗                             |
+| 20.0            | Kubernetes main repo, 1.20 branch    | ✗                             |
+| 21.0 Alpha/Beta | Kubernetes main repo, 1.21 branch    | ✗                             |
+| 21.0            | Kubernetes main repo, 1.21 branch    | ✗                             |
+| 22.0 Alpha/Beta | Kubernetes main repo, 1.22 branch    | ✗                             |
+| 22.0            | Kubernetes main repo, 1.22 branch    | ✗                             |
+| 23.0 Alpha/Beta | Kubernetes main repo, 1.23 branch    | ✗                             |
+| 23.0            | Kubernetes main repo, 1.23 branch    | ✗                             |
+| 24.0 Alpha/Beta | Kubernetes main repo, 1.24 branch    | ✗                             |
+| 24.0            | Kubernetes main repo, 1.24 branch    | ✗                             |
+| 25.0 Alpha/Beta | Kubernetes main repo, 1.25 branch    | ✗                             |
+| 25.0            | Kubernetes main repo, 1.25 branch    | ✗                             |
+| 26.0 Alpha/Beta | Kubernetes main repo, 1.26 branch    | ✗                             |
+| 26.0            | Kubernetes main repo, 1.26 branch    | ✗                             |
+| 27.0 Alpha/Beta | Kubernetes main repo, 1.27 branch    | ✗                             |
+| 27.0            | Kubernetes main repo, 1.27 branch    | ✗                             |
+| 28.0 Alpha/Beta | Kubernetes main repo, 1.28 branch    | ✗                             |
+| 28.0            | Kubernetes main repo, 1.28 branch    | ✗                             |
+| 29.0 Alpha/Beta | Kubernetes main repo, 1.29 branch    | ✗                             |
+| 29.0            | Kubernetes main repo, 1.29 branch    | ✗                             |
+| 30.0 Alpha/Beta | Kubernetes main repo, 1.30 branch    | ✗                             |
+| 30.0            | Kubernetes main repo, 1.30 branch    | ✓                             |
+| 31.0 Alpha/Beta | Kubernetes main repo, 1.31 branch    | ✗                             |
+| 31.0            | Kubernetes main repo, 1.31 branch    | ✓                             |
+| 32.0 Alpha/Beta | Kubernetes main repo, 1.32 branch    | ✗                             |
+| 32.0            | Kubernetes main repo, 1.32 branch    | ✓                             |
 
-> See [here](#homogenizing-the-kubernetes-python-client-versions) for an explaination of why there is no v13-v16 release.
+> See [here](#homogenizing-the-kubernetes-python-client-versions) for an explanation of why there is no v13-v16 release.
 
 Key:
 
@@ -145,7 +189,7 @@ Note: There would be no maintenance for alpha/beta releases except the latest on
 
 The client releases v12 and before following a versioning schema where the major version was 4 integer positions behind the Kubernetes minor on which the client is based on. For example, v12.0.0 is based on Kubernetes v1.16, v11.0.0 is based on Kubernetes v1.15 and so on.
 
-This created a lot of confusion tracking two different version numbers for each client release. It was decided to homogenize the version scheme starting from the Kubernetes Python client based on Kubernetes v1.17. The versioning scheme of the client from this release would be vY.Z.P where Y and Z are the Kubernetes minor and patch release numbers from Kubernets v1.Y.Z and P is the client specific patch release numbers to accomodate changes and fixes done specifically to the client. For more details, refer [this issue](https://github.com/kubernetes-client/python/issues/1244).
+This created a lot of confusion tracking two different version numbers for each client release. It was decided to homogenize the version scheme starting from the Kubernetes Python client based on Kubernetes v1.17. The versioning scheme of the client from this release would be vY.Z.P where Y and Z are the Kubernetes minor and patch release numbers from Kubernets v1.Y.Z and P is the client specific patch release numbers to accommodate changes and fixes done specifically to the client. For more details, refer [this issue](https://github.com/kubernetes-client/python/issues/1244).
 
 ## Community, Support, Discussion
 
@@ -171,7 +215,7 @@ brew install python
 Once installed, you can query the version of OpenSSL like so:
 
 ```
-python -c "import ssl; print ssl.OPENSSL_VERSION"
+python -c "import ssl; print (ssl.OPENSSL_VERSION)"
 ```
 
 You'll need a version with OpenSSL version 1.0.0 or later.
@@ -191,3 +235,5 @@ This will cause a failure in  non-exec/attach calls. If you reuse your api clien
 recreate it between api calls that use _stream_ and other api calls.
 
 See more at [exec example](examples/pod_exec.py).
+
+**[⬆ back to top](#Installation)**
