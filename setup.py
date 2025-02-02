@@ -16,7 +16,7 @@ from setuptools import setup
 
 # Do not edit these constants. They will be updated automatically
 # by scripts/update-client.sh.
-CLIENT_VERSION = "18.0.0-snapshot"
+CLIENT_VERSION = "32.0.0+snapshot"
 PACKAGE_NAME = "kubernetes"
 DEVELOPMENT_STATUS = "3 - Alpha"
 
@@ -35,7 +35,9 @@ with open('requirements.txt') as f:
     for line in f:
         line, _, _ = line.partition('#')
         line = line.strip()
-        if ';' in line:
+        if not line or line.startswith('setuptools'):
+            continue
+        elif ';' in line:
             requirement, _, specifier = line.partition(';')
             for_specifier = EXTRAS.setdefault(':{}'.format(specifier), [])
             for_specifier.append(requirement)
@@ -61,9 +63,11 @@ setup(
               'kubernetes.watch', 'kubernetes.client.api',
               'kubernetes.stream', 'kubernetes.client.models',
               'kubernetes.utils', 'kubernetes.client.apis',
-              'kubernetes.dynamic', 'kubernetes.leaderelection'],
+              'kubernetes.dynamic', 'kubernetes.leaderelection',
+              'kubernetes.leaderelection.resourcelock'],
     include_package_data=True,
     long_description="Python client for kubernetes http://kubernetes.io/",
+    python_requires='>=3.6',
     classifiers=[
         "Development Status :: %s" % DEVELOPMENT_STATUS,
         "Topic :: Utilities",
@@ -77,5 +81,7 @@ setup(
         "Programming Language :: Python :: 3.7",
         "Programming Language :: Python :: 3.8",
         "Programming Language :: Python :: 3.9",
+        "Programming Language :: Python :: 3.10",
+        "Programming Language :: Python :: 3.11",
     ],
 )
